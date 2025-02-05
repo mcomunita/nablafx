@@ -1,5 +1,5 @@
 data:
-  class_path: nnlafx.data.DryWetFilesPluginDataModule
+  class_path: nablafx.data.DryWetFilesPluginDataModule
   init_args:
     root_dir_dry: data/TONETWIST-AFX-DATASET/EXTERNAL/keith-bloemer/DRY/test
     root_dir_wet: data/TONETWIST-AFX-DATASET/EXTERNAL/keith-bloemer/DIY-Klon-Centaur/test/DSi_G090_T080_O060

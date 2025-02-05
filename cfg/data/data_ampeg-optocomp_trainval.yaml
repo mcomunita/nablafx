@@ -1,5 +1,5 @@
 data:
-  class_path: nnlafx.data.DryWetFilesPluginDataModule
+  class_path: nablafx.data.DryWetFilesPluginDataModule
   init_args:
     root_dir_dry: data/TONETWIST-AFX-DATASET/ANALOG/DRY-with-markers/trainval
     root_dir_wet: data/TONETWIST-AFX-DATASET/ANALOG/Ampeg-OptoComp/trainval/C100_R100_L060

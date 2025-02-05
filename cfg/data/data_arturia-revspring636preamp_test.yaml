@@ -1,5 +1,5 @@
 data:
-  class_path: nnlafx.data.DryWetFilesPluginDataModule
+  class_path: nablafx.data.DryWetFilesPluginDataModule
   init_args:
     root_dir_dry: data/TONETWIST-AFX-DATASET/DIGITAL/DRY/test
     root_dir_wet: data/TONETWIST-AFX-DATASET/DIGITAL/Arturia-RevSpring636Preamp/test/M100_I050_B000_O060

@@ -1,5 +1,5 @@
 data:
-  class_path: nnlafx.data.DryWetFilesPluginDataModule
+  class_path: nablafx.data.DryWetFilesPluginDataModule
   init_args:
     root_dir_dry: data/TONETWIST-AFX-DATASET/DIGITAL/DRY/trainval
     root_dir_wet: data/TONETWIST-AFX-DATASET/DIGITAL/Custom-DynamicFuzz/trainval/G050_S100_A000_R100_V100

@@ -1,14 +1,14 @@
 model:
-  class_path: nnlafx.system.GreyBoxSystem
+  class_path: nablafx.system.GreyBoxSystem
   init_args:
     lr: 0.1
     log_media_every_n_steps: 3000
-    
-    model: 
-      class_path: nnlafx.models.GreyBoxModel
+
+    model:
+      class_path: nablafx.models.GreyBoxModel
       init_args:
-        processors: 
-          - class_path: nnlafx.processors.ParametricEQ
+        processors:
+          - class_path: nablafx.processors.ParametricEQ
             init_args:
               sample_rate: 48000
               min_gain_db: -12.0
@@ -17,19 +17,19 @@ model:
               max_q_factor: 10.0
               block_size: 128
               control_type: "static-cond"
-          - class_path: nnlafx.processors.Gain
+          - class_path: nablafx.processors.Gain
             init_args:
               sample_rate: 48000
               min_gain_db: -40.0
               max_gain_db: 40.0
               control_type: "static-cond"
-          - class_path: nnlafx.processors.DCOffset
+          - class_path: nablafx.processors.DCOffset
             init_args:
               sample_rate: 48000
               min_offset: -2.0
               max_offset: 2.0
               control_type: "static-cond"
-          - class_path: nnlafx.processors.StaticMLPNonlinearity
+          - class_path: nablafx.processors.StaticMLPNonlinearity
             init_args:
               sample_rate: 48000
               hidden_dim: 32
@@ -37,13 +37,13 @@ model:
               w0_initial: 30.0
               pretrained: "weights/static_mlp_nonlinearity_h32-l3_tanh.pt"
               lr_multiplier: 0.01
-          - class_path: nnlafx.processors.Gain
+          - class_path: nablafx.processors.Gain
             init_args:
               sample_rate: 48000
               min_gain_db: -40.0
               max_gain_db: 40.0
               control_type: "static-cond"
-          - class_path: nnlafx.processors.ParametricEQ
+          - class_path: nablafx.processors.ParametricEQ
             init_args:
               sample_rate: 48000
               min_gain_db: -12.0
@@ -52,7 +52,7 @@ model:
               max_q_factor: 10.0
               block_size: 128
               control_type: "static-cond"
-          - class_path: nnlafx.processors.Lowpass
+          - class_path: nablafx.processors.Lowpass
             init_args:
               sample_rate: 48000
               min_cutoff_freq: 20000
@@ -71,7 +71,7 @@ model:
         dyn_cond_num_layers: 1
 
     loss:
-      class_path: nnlafx.loss.TimeAndFrequencyDomainLoss
+      class_path: nablafx.loss.TimeAndFrequencyDomainLoss
       init_args:
         time_domain_weight: .5
         frequency_domain_weight: .5

@@ -1,5 +1,5 @@
 data:
-  class_path: nnlafx.data.DryWetFilesPluginDataModule
+  class_path: nablafx.data.DryWetFilesPluginDataModule
   init_args:
     root_dir_dry: data/TONETWIST-AFX-DATASET/EXTERNAL/alec-wright-automatedguitarampmodeling/DRY/trainval
     root_dir_wet: data/TONETWIST-AFX-DATASET/EXTERNAL/alec-wright-automatedguitarampmodeling/Blackstar-HT1-ChOverdrive/trainval/G050_V100

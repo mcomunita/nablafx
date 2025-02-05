@@ -1,14 +1,14 @@
 model:
-  class_path: nnlafx.system.BlackBoxSystem
+  class_path: nablafx.system.BlackBoxSystem
   init_args:
     lr: 0.01
     log_media_every_n_steps: 3000
 
     model:
-      class_path: nnlafx.models.BlackBoxModel
+      class_path: nablafx.models.BlackBoxModel
       init_args:
         processor:
-          class_path: nnlafx.s4.S4
+          class_path: nablafx.s4.S4
           init_args:
             num_inputs: 1
             num_outputs: 1
@@ -33,7 +33,7 @@ model:
             # convert_to_amplitude: False
 
     loss:
-      class_path: nnlafx.loss.TimeAndFrequencyDomainLoss
+      class_path: nablafx.loss.TimeAndFrequencyDomainLoss
       init_args:
         time_domain_weight: .5
         frequency_domain_weight: .5
