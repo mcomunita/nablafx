@@ -90,9 +90,7 @@ class DryWetFilesPluginDataModule(pl.LightningDataModule):
                     preload=self.preload,
                 )
 
-            self.train_dataset, self.val_dataset = torch.utils.data.random_split(
-                self.trainval_dataset, [self.trainval_split, 1 - self.trainval_split]
-            )
+            self.train_dataset, self.val_dataset = torch.utils.data.random_split(self.trainval_dataset, [self.trainval_split, 1 - self.trainval_split])
 
             print("Train and Validation Datasets:")
             self.trainval_dataset.print()
@@ -186,19 +184,11 @@ class PluginDataset(torch.utils.data.Dataset):
         self.target_files = natsorted(self.target_files)
 
         # check dry and wet files match
-        for i, (input_file, target_file) in enumerate(
-            zip(self.input_files, self.target_files)
-        ):
-            ifile = os.path.basename(input_file).split(".")[
-                -3
-            ]  # f"{filename}.input.wav"
-            tfile = os.path.basename(target_file).split(".")[
-                -3
-            ]  # f"{params_string}.{filename}.input.wav"
+        for i, (input_file, target_file) in enumerate(zip(self.input_files, self.target_files)):
+            ifile = os.path.basename(input_file).split(".")[-3]  # f"{filename}.input.wav"
+            tfile = os.path.basename(target_file).split(".")[-3]  # f"{params_string}.{filename}.input.wav"
             if ifile != tfile:
-                raise RuntimeError(
-                    f"Found non-matching files: {ifile} != {tfile}. Check dataset."
-                )
+                raise RuntimeError(f"Found non-matching files: {ifile} != {tfile}. Check dataset.")
 
         # get audio samples and params
         self.samples = []
@@ -214,9 +204,7 @@ class PluginDataset(torch.utils.data.Dataset):
             self.num_frames += num_frames
 
             if self.preload:
-                sys.stdout.write(
-                    f"* Pre-loading... {idx+1:3d}/{len(self.target_files):3d} ...\r"
-                )
+                sys.stdout.write(f"* Pre-loading... {idx+1:3d}/{len(self.target_files):3d} ...\r")
                 sys.stdout.flush()
                 input, sr = self._load(ifile)
                 target, sr = self._load(tfile)
@@ -259,12 +247,8 @@ class PluginDataset(torch.utils.data.Dataset):
                             "idx": idx,
                             "input_file": ifile,
                             "target_file": tfile,
-                            "input_audio": (
-                                input[:, offset:end] if input is not None else None
-                            ),
-                            "target_audio": (
-                                target[:, offset:end] if input is not None else None
-                            ),
+                            "input_audio": (input[:, offset:end] if input is not None else None),
+                            "target_audio": (target[:, offset:end] if input is not None else None),
                             "offset": offset,
                             "frames": num_frames,
                             "sr": sr,
@@ -308,9 +292,7 @@ class PluginDataset(torch.utils.data.Dataset):
         return input, target
 
     def _load(self, filepath, frame_offset=0, num_frames=-1):
-        x, sr = torchaudio.load(
-            filepath, frame_offset, num_frames, normalize=True, channels_first=True
-        )
+        x, sr = torchaudio.load(filepath, frame_offset, num_frames, normalize=True, channels_first=True)
         if sr != self.sample_rate:
             x = torchaudio.functional.resample(x, sr, self.sample_rate)
         return x, sr
@@ -355,9 +337,7 @@ class ParametricPluginDataset(torch.utils.data.Dataset):
 
         # get file paths
         self.input_files = glob.glob(os.path.join(self.root_dir_dry, "*.input.wav"))
-        self.target_files = glob.glob(
-            os.path.join(self.root_dir_wet, "*", "*.target.wav")
-        )
+        self.target_files = glob.glob(os.path.join(self.root_dir_wet, "*", "*.target.wav"))
 
         # ensure that the sets are ordered correctly
         self.input_files = natsorted(self.input_files)
@@ -385,22 +365,14 @@ class ParametricPluginDataset(torch.utils.data.Dataset):
                 self.num_frames += num_frames
 
                 # extract params tensor from filename
-                params = os.path.basename(tfile).split(".")[
-                    -4
-                ]  # get params string f"{params_string}.{filename}.input.wav"
-                params = params.split(
-                    "_"
-                )  # split params string f"{p1_letter}{p1_value}_{p2_letter}{p2_value}..."
-                params = [
-                    float(p[1:]) / 100 for p in params
-                ]  # remove letter, convert to float, normalize to [0,1]
+                params = os.path.basename(tfile).split(".")[-4]  # get params string f"{params_string}.{filename}.input.wav"
+                params = params.split("_")  # split params string f"{p1_letter}{p1_value}_{p2_letter}{p2_value}..."
+                params = [float(p[1:]) / 100 for p in params]  # remove letter, convert to float, normalize to [0,1]
                 params = torch.tensor(params)  # tensor
                 params = params[self.params_idxs_to_use]  # select params to use
 
                 if self.preload:
-                    sys.stdout.write(
-                        f"* Pre-loading... {(iidx)*len(target_files)+tidx+1:3d}/{len(self.target_files):3d} ...\r"
-                    )
+                    sys.stdout.write(f"* Pre-loading... {(iidx)*len(target_files)+tidx+1:3d}/{len(self.target_files):3d} ...\r")
                     sys.stdout.flush()
                     input, sr = self._load(ifile)
                     target, sr = self._load(tfile)
@@ -437,14 +409,8 @@ class ParametricPluginDataset(torch.utils.data.Dataset):
                                 "tidx": tidx,
                                 "input_file": ifile,
                                 "target_file": tfile,
-                                "input_audio": (
-                                    input[:, offset:end] if input is not None else None
-                                ),
-                                "target_audio": (
-                                    target[:, offset:end]
-                                    if target is not None
-                                    else None
-                                ),
+                                "input_audio": (input[:, offset:end] if input is not None else None),
+                                "target_audio": (target[:, offset:end] if target is not None else None),
                                 "params": params,
                                 "offset": offset,
                                 "frames": num_frames,
@@ -492,9 +458,7 @@ class ParametricPluginDataset(torch.utils.data.Dataset):
         return input, target, params
 
     def _load(self, filepath, frame_offset=0, num_frames=-1):
-        x, sr = torchaudio.load(
-            filepath, frame_offset, num_frames, normalize=True, channels_first=True
-        )
+        x, sr = torchaudio.load(filepath, frame_offset, num_frames, normalize=True, channels_first=True)
         if sr != self.sample_rate:
             x = torchaudio.functional.resample(x, sr, self.sample_rate)
         return x, sr
