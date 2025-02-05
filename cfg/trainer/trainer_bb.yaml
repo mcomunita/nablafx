@@ -2,18 +2,18 @@ trainer:
   gradient_clip_val: 10.0
   gradient_clip_algorithm: value
   max_steps: 15000
-  
+
   logger:
     # class_path: pytorch_lightning.loggers.WandbLogger
     class_path: lightning.pytorch.loggers.wandb.WandbLogger
     init_args:
-      entity: team-mcomunita-qmul
-      project: nnlinafx-PARAM
+      entity: mcomunita
+      project: nablafx
       name: bb_S4-TVF-B8-S32-C16_lr.01_td.5_fd.5
-      save_dir: logs-scratch-02/multidrive-ffuzz/S4-TVF/bb_S4-TVF-B8-S32-C16_lr.01_td.5_fd.5 # dir needs to already exist
+      save_dir: logs/multidrive-ffuzz/S4-TVF/bb_S4-TVF-B8-S32-C16_lr.01_td.5_fd.5 # dir needs to already exist
       group: Multidrive-FFuzz_S4-TVF
       tags: ["Multidrive-FFuzz", "S4-TVF"]
-  
+
   callbacks:
     # - class_path: pytorch_lightning.callbacks.ModelCheckpoint
     - class_path: lightning.pytorch.callbacks.model_checkpoint.ModelCheckpoint
