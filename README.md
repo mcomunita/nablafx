@@ -1,3 +1,6 @@
+<img width="400px" src="assets/logo.png">
+
+
 python 3.9.7
 
 conda env create -f requirements_temp-for-rnl.yaml
