@@ -1,0 +1,11 @@
+name: nablafx
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.9.7
+  - pip
+  - wheel
+  - pip:
+      - torch==1.9.0
+      - rational-activations==0.2.1

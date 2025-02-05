@@ -1,0 +1,16 @@
+auraloss==0.4.0
+einops==0.8.0
+frechet_audio_distance
+jsonargparse[signatures]>=4.27.7
+lightning==2.3.2
+lightning-utilities==0.11.3.post0
+matplotlib==3.9.1
+natsort
+numpy==2.0.0
+scipy==1.13.1
+torch==2.3.1
+torchaudio==2.3.1
+torchmetrics==1.4.0.post0
+torchvision==0.18.1
+typing-extensions==4.12.2
+wandb==0.17.4
