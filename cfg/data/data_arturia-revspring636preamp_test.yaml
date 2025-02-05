@@ -1,0 +1,11 @@
+data:
+  class_path: nnlafx.data.DryWetFilesPluginDataModule
+  init_args:
+    root_dir_dry: data/TONETWIST-AFX-DATASET/DIGITAL/DRY/test
+    root_dir_wet: data/TONETWIST-AFX-DATASET/DIGITAL/Arturia-RevSpring636Preamp/test/M100_I050_B000_O060
+    data_to_use: 1.0
+    sample_length: 240000 # 5s
+    sample_rate: 48000
+    preload: True
+    batch_size: 8
+    num_workers: 4

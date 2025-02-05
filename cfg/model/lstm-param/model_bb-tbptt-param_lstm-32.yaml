@@ -1,0 +1,35 @@
+model:
+  class_path: nnlafx.system.BlackBoxSystemWithTBPTT
+  init_args:
+    lr: 0.001
+    log_media_every_n_steps: 90000
+    step_num_samples: 4800 # 100ms
+    
+    model:
+      class_path: nnlafx.models.BlackBoxModel
+      init_args:
+        processor:
+          class_path: nnlafx.lstm.LSTM
+          init_args:
+            num_inputs: 1
+            num_outputs: 1
+            num_controls: 1
+            hidden_size: 32
+            num_layers: 1
+            residual: false
+            direct_path: false
+            cond_type: fixed # null, fixed, tvcond
+            cond_block_size: 128 # block size for tvcond
+            cond_num_layers: 1 # number of lstm layers for tvcond
+
+    loss:
+      class_path: nnlafx.loss.TimeAndFrequencyDomainLoss
+      init_args:
+        time_domain_weight: .5
+        frequency_domain_weight: .5
+
+        time_domain_loss:
+          class_path: torch.nn.L1Loss
+
+        frequency_domain_loss:
+          class_path: auraloss.freq.MultiResolutionSTFTLoss

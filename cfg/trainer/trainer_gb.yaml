@@ -1,0 +1,38 @@
+trainer:
+  gradient_clip_val: 10.0
+  gradient_clip_algorithm: value
+  max_steps: 15000
+
+  logger:
+    # class_path: pytorch_lightning.loggers.WandbLogger
+    class_path: lightning.pytorch.loggers.wandb.WandbLogger
+    init_args:
+      entity: team-mcomunita-qmul
+      project: nnlinafx-PARAM
+      name: gb_GB-PARAM-FUZZ-RNL_lr.1_lrm1_td.5_fd.5_phinv
+      save_dir: logs-scratch-02/multidrive-ffuzz/GB-PARAM-FUZZ-RNL/gb_GB-PARAM-FUZZ-RNL_lr.1_lrm1_td.5_fd.5_phinv # dir needs to already exist
+      # save_dir: logs/test
+      group: Multidrive-FFuzz_GB-PARAM-FUZZ-RNL
+      tags: ["Multidrive-FFuzz", "GB-PARAM-FUZZ-RNL"]
+  
+  callbacks:
+    # - class_path: pytorch_lightning.callbacks.ModelCheckpoint
+    - class_path: lightning.pytorch.callbacks.model_checkpoint.ModelCheckpoint
+      init_args:
+        save_last: true
+        save_top_k: 1
+        monitor: loss/val/tot
+        every_n_train_steps: 100
+        filename: "{epoch}-{step}"
+    # - class_path: pytorch_lightning.callbacks.ModelSummary
+    - class_path: lightning.pytorch.callbacks.ModelSummary
+      init_args:
+        max_depth: 2
+    # - class_path: pytorch_lightning.callbacks.LearningRateMonitor
+    - class_path: lightning.pytorch.callbacks.LearningRateMonitor
+    # - class_path: pytorch_lightning.callbacks.EarlyStopping
+    - class_path: lightning.pytorch.callbacks.EarlyStopping
+      init_args:
+        monitor: "loss/val/tot"
+        patience: 50
+        verbose: true

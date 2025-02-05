@@ -1,0 +1,12 @@
+data:
+  class_path: nnlafx.data.DryWetFilesPluginDataModule
+  init_args:
+    root_dir_dry: data/TONETWIST-AFX-DATASET/ANALOG/DRY-with-markers/trainval
+    root_dir_wet: data/TONETWIST-AFX-DATASET/ANALOG/Flamma-AnalogComp/trainval/V100_C100_E050
+    data_to_use: 1.0
+    trainval_split: 0.9
+    sample_length: 144000
+    sample_rate: 48000
+    preload: True
+    batch_size: 16
+    num_workers: 4

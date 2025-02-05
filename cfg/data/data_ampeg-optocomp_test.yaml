@@ -1,0 +1,11 @@
+data:
+  class_path: nnlafx.data.DryWetFilesPluginDataModule
+  init_args:
+    root_dir_dry: data/TONETWIST-AFX-DATASET/ANALOG/DRY-with-markers/test
+    root_dir_wet: data/TONETWIST-AFX-DATASET/ANALOG/Ampeg-OptoComp/test/C100_R100_L060
+    data_to_use: 1.0
+    sample_length: 240000 # 5s
+    sample_rate: 48000
+    preload: True
+    batch_size: 8
+    num_workers: 4
