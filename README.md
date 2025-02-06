@@ -1,9 +1,11 @@
 <div align="center">
-<img width="500px" src="assets/nablafx_1.png"><br>
-<!-- <img width="400px" src="assets/nablafx_2.png"><br> -->
+<img width="250px" src="assets/nablafx_1.png">
 <br><br>
-<img width="600px" src="assets/nablafx_bold.png"><br>
-<!-- <img width="500px" src="assets/nablafx_bold_italic.png"><br> -->
+  
+# NablAFx
+
+**differentiable black-box and gray-box audio effects modeling framework**
+
 </div>
 
 python 3.9.7
