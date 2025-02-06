@@ -1,4 +1,4 @@
-<img width="400px" src="assets/logo.png">
+<img width="300px" src="assets/nabla.png">
 
 
 python 3.9.7
