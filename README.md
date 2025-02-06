@@ -1,8 +1,9 @@
 <div align="center">
-  
-<img width="600px" src="assets/nablafx_1.png">
-<img width="600px" src="assets/nablafx_2.png">
-
+<img width="500px" src="assets/nablafx_1.png"><br>
+<!-- <img width="400px" src="assets/nablafx_2.png"><br> -->
+<br><br>
+<img width="600px" src="assets/nablafx_bold.png"><br>
+<!-- <img width="500px" src="assets/nablafx_bold_italic.png"><br> -->
 </div>
 
 python 3.9.7
