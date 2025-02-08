@@ -6,20 +6,23 @@
 
 **differentiable black-box and gray-box audio effects modeling framework**
 
-[Paper](https://arxiv.org/abs/2310.15247) | [Webpage](https://mcomunita.github.io/syncfusion-webpage/)
+[Paper](https://arxiv.org/abs/2310.15247)
 
-[Marco Comunità](https://mcomunita.github.io/)<sup>1</sup>, [Riccardo F. Gramaccioni](https://www.linkedin.com/in/riccardo-fosco-gramaccioni/)<sup>2</sup>, [Emilian Postolache](https://emilianpostolache.com/)<sup>2</sup><br>[Emanuele Rodolà,](https://www.linkedin.com/in/erodola/)<sup>2</sup>, [Danilo Comminiello](https://www.linkedin.com/in/danilocomminiello/)<sup>2</sup>, [Joshua D. Reiss](http://www.eecs.qmul.ac.uk/~josh/)<sup>1</sup>
+[Marco Comunità](https://mcomunita.github.io/)<sup>1</sup>, [Christian J. Steinmetz](https://www.christiansteinmetz.com/)<sup>1</sup>, [Joshua D. Reiss](http://www.eecs.qmul.ac.uk/~josh/)<sup>1</sup>
 
-<sup>1</sup> Centre for Digital Music, Queen Mary University of London, UK<br><sup>2</sup> Sapienza University of Rome, Italy
+<sup>1</sup> Centre for Digital Music, Queen Mary University of London, UK<br>
 
 </div>
 
 ## Abstract
-Sound design involves creatively selecting, recording, and editing sound effects for various media like cinema, video games, and virtual/augmented reality. One of the most time-consuming steps when designing sound is synchronizing audio with video. In some cases, environmental recordings from video shoots are available, which can aid in the process. However, in video games and animations, no reference audio exists, requiring manual annotation of event timings from the video. We propose a system to extract repetitive actions onsets from a video, which are then used - in conjunction with audio or textual embeddings - to condition a diffusion model trained to generate a new synchronized sound effects audio track. In this way, we leave complete creative control to the sound designer while removing the burden of synchronization with video. Furthermore, editing the onset track or changing the conditioning embedding requires much less effort than editing the audio track itself, simplifying the sonification process. We provide sound examples, source code, and pretrained models to faciliate reproducibility
+We present NablAFx, an open-source framework developed to support research in differentiable black-box and gray-box modeling of audio effects. 
+Built in PyTorch, NablAFx offers a versatile ecosystem to configure, train, evaluate, and compare various architectural approaches. 
+It includes classes to manage model architectures, datasets, and training, along with features to compute and log losses, metrics and media, and plotting functions to facilitate detailed analysis. 
+It incorporates implementations of established black-box architectures and conditioning methods, as well as differentiable DSP blocks and controllers, enabling the creation of both parametric and non-parametric gray-box signal chains.
 
 
 ```BibTex
-@inproceedings{comunita2024syncfusion,
+@inproceedings{nablafx,
   title={Syncfusion: Multimodal Onset-Synchronized Video-to-Audio Foley Synthesis},
   author={Comunit{\`a}, Marco and Gramaccioni, Riccardo F and Postolache, Emilian and Rodol{\`a}, Emanuele and Comminiello, Danilo and Reiss, Joshua D},
   booktitle={ICASSP 2024-2024 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)},
@@ -66,12 +69,17 @@ pip install --upgrade -r requirements.txt
 
 ## Setup
 
-Install the requirements (use Python version < 3.10).
+NablAFx was developed with Python 3.9.7.
+
+PIP - Install requirements. First the **temporary** ones (for rational activations), than the **updated** ones:
 ```
 python3 -m venv .venv
 source .venv/bin/activate
-python3 -m pip install -r requirements.txt
+pip install -r requirements_temp-for-rnl.txt
+pip install --upgrade -r requirements.txt
 ```
+
+CONDA - 
 
 :warning:
 CLAP might give errors with `transformers` versions other than `4.30.2`.
