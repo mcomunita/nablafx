@@ -13,5 +13,3 @@ python scripts/main.py test \
 --trainer.devices=1 \
 --config cfg/data/data-param_multidrive-ffuzz_test.yaml
 # --data.sample_length 480000
-# -c cfg/model/gb-fuzz-peq+gain+off+rnl+peq.yaml \
-# --trainer.logger.id "jhfofqfn" \
