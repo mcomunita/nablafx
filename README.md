@@ -20,6 +20,7 @@ Built in PyTorch, NablAFx offers a versatile ecosystem to configure, train, eval
 It includes classes to manage model architectures, datasets, and training, along with features to compute and log losses, metrics and media, and plotting functions to facilitate detailed analysis. 
 It incorporates implementations of established black-box architectures and conditioning methods, as well as differentiable DSP blocks and controllers, enabling the creation of both parametric and non-parametric gray-box signal chains.
 
+## Citation
 
 ```BibTex
 @inproceedings{nablafx,
