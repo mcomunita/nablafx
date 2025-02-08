@@ -71,7 +71,7 @@ pip install --upgrade -r requirements.txt
 
 NablAFx was developed with Python 3.9.7.
 
-PIP - Install requirements. First the **temporary** ones (for rational activations), than the **updated** ones:
+## PIP - Install requirements. First the **temporary** ones (for rational activations), than the **updated** ones:
 ```
 python3 -m venv .venv
 source .venv/bin/activate
@@ -79,7 +79,12 @@ pip install -r requirements_temp-for-rnl.txt
 pip install --upgrade -r requirements.txt
 ```
 
-CONDA - 
+CONDA - Install requirements. First the **temporary** ones (for rational activations), than the **updated** ones:
+```
+conda env create -f requirements_temp-for-rnl.yaml
+conda env update -f environment.yml
+conda activate nablafx
+```
 
 :warning:
 CLAP might give errors with `transformers` versions other than `4.30.2`.
