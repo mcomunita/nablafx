@@ -63,7 +63,7 @@ move `weights/rationals_config.json` to: `~/.conda/envs/nablafx/lib/python3.9/si
 
 ## Data
 
-NablAFx is setup to work with the [ToneTwist AFx Dataset](https://github.com/mcomunita/tonetwist-afx-dataset), and so are the dataset classes provided in `./nablafx/data.py`, but you can also write your own custom class and use a different dataset.
+NablAFx is setup to work with the [ToneTwisT AFx Dataset](https://github.com/mcomunita/tonetwist-afx-dataset), and so are the dataset classes provided in `./nablafx/data.py`, but you can also write your own custom class and use a different dataset.
 
 Make data folder and either move data to that folder or create a symbolic link:
 
