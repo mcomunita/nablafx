@@ -37,8 +37,6 @@ It incorporates implementations of established black-box architectures and condi
 
 To show your support please consider giving this repo a star :star:. Thanks! :metal:
 
----
-
 ## Setup
 
 NablAFx was developed with Python 3.9.7.
@@ -149,8 +147,6 @@ Scripts to measure all these metrics of a model are in the `tests` folder. The c
 
 The script to pretrain differentiable processors (see `nablafx/processors.py`) like a `StaticMLPNonlinearity` or a `StStaticFIRFilter` is `scripts/pretrain.py`.
 Examples of pretrained nonlinearities and filters are in `weights`.
-
----
 
 ## Credits
 
