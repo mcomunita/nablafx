@@ -23,13 +23,7 @@ It incorporates implementations of established black-box architectures and condi
 ## Citation
 
 ```BibTex
-@inproceedings{nablafx,
-  title={Syncfusion: Multimodal Onset-Synchronized Video-to-Audio Foley Synthesis},
-  author={Comunit{\`a}, Marco and Gramaccioni, Riccardo F and Postolache, Emilian and Rodol{\`a}, Emanuele and Comminiello, Danilo and Reiss, Joshua D},
-  booktitle={ICASSP 2024-2024 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)},
-  pages={936--940},
-  year={2024},
-  organization={IEEE}
+@inproceedings{nablafx
 }
 ```
 
