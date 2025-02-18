@@ -23,7 +23,14 @@ It incorporates implementations of established black-box architectures and condi
 ## Citation
 
 ```BibTex
-@inproceedings{nablafx
+@misc{comunità2025nablafxframeworkdifferentiableblackbox,
+      title={NablAFx: A Framework for Differentiable Black-box and Gray-box Modeling of Audio Effects}, 
+      author={Marco Comunità and Christian J. Steinmetz and Joshua D. Reiss},
+      year={2025},
+      eprint={2502.11668},
+      archivePrefix={arXiv},
+      primaryClass={cs.SD},
+      url={https://arxiv.org/abs/2502.11668}, 
 }
 ```
 
