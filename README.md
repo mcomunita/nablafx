@@ -151,7 +151,7 @@ Examples of pretrained nonlinearities and filters are in `weights`.
 
 ## Contributions
 
-There is a lot that can be done to improve and expand NablAFx, and we encourage anyone to contribute.
+There is a lot that can be done to improve and expand NablAFx, and we encourage anyone to contribute or suggest new features.
 
 ## Credits
 
