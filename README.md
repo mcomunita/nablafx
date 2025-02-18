@@ -149,6 +149,10 @@ Scripts to measure all these metrics of a model are in the `tests` folder. The c
 The script to pretrain differentiable processors (see `nablafx/processors.py`) like a `StaticMLPNonlinearity` or a `StStaticFIRFilter` is `scripts/pretrain.py`.
 Examples of pretrained nonlinearities and filters are in `weights`.
 
+## Contributions
+
+There is a lot that can be done to improve and expand NablAFx, and we encourage anyone to contribute.
+
 ## Credits
 
 * LSTM - [https://github.com/Alec-Wright/Automated-GuitarAmpModelling](https://github.com/Alec-Wright/Automated-GuitarAmpModelling)
