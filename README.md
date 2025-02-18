@@ -6,7 +6,7 @@
 
 **differentiable black-box and gray-box audio effects modeling framework**
 
-[Paper]()
+[Paper](https://arxiv.org/abs/2502.11668)
 
 [Marco Comunità](https://mcomunita.github.io/), [Christian J. Steinmetz](https://www.christiansteinmetz.com/), [Joshua D. Reiss](http://www.eecs.qmul.ac.uk/~josh/)
 
