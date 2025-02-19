@@ -146,7 +146,7 @@ Scripts to measure all these metrics of a model are in the `tests` folder. The c
 
 ## Pre-train MLP Nonlinearity or FIR
 
-The script to pretrain differentiable processors (see `nablafx/processors.py`) like a `StaticMLPNonlinearity` or a `StStaticFIRFilter` is `scripts/pretrain.py`.
+The script to pretrain differentiable processors (see `nablafx/processors.py`) like a `StaticMLPNonlinearity` or a `StaticFIRFilter` is `scripts/pretrain.py`.
 Examples of pretrained nonlinearities and filters are in `weights`.
 
 ## Contributions
