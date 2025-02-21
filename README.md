@@ -160,4 +160,5 @@ There is a lot that can be done to improve and expand NablAFx, and we encourage 
 * GCN - [https://github.com/mcomunita/gcn-tfilm](https://github.com/mcomunita/gcn-tfilm)
 * S4 - [https://github.com/int0thewind/s4-dynamic-range-compressor](https://github.com/int0thewind/s4-dynamic-range-compressor)
 * dasp - [https://github.com/csteinmetz1/dasp-pytorch](https://github.com/csteinmetz1/dasp-pytorch)
+* rational activations - [https://github.com/ml-research/rational_activations](https://github.com/ml-research/rational_activations)
 * auraloss - [https://github.com/csteinmetz1/auraloss](https://github.com/csteinmetz1/auraloss)
