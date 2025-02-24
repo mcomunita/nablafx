@@ -34,6 +34,18 @@ It incorporates implementations of established black-box architectures and condi
 }
 ```
 
+```BibTex
+@misc{comunità2025differentiableblackboxgrayboxmodeling,
+      title={Differentiable Black-box and Gray-box Modeling of Nonlinear Audio Effects}, 
+      author={Marco Comunità and Christian J. Steinmetz and Joshua D. Reiss},
+      year={2025},
+      eprint={2502.14405},
+      archivePrefix={arXiv},
+      primaryClass={cs.SD},
+      url={https://arxiv.org/abs/2502.14405}, 
+}
+```
+
 ## Support
 
 To show your support please consider giving this repo a star :star:. Thanks! :metal:
