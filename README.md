@@ -67,7 +67,7 @@ move `weights/rationals_config.json` to: `.venv/lib/python3.9/site-packages/rati
 
 CONDA - Install requirements. First the **temporary** ones (for rational activations), than the **updated** ones:
 ```
-conda env create -f requirements_temp-for-rnl.yaml
+conda env create -f environment_temp-for-rnl.yaml
 conda env update -f environment.yml
 conda activate nablafx
 ```
