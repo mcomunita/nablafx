@@ -10,8 +10,15 @@
   - ✅ Created test suite and configuration examples
   - 📍 **Location**: `nablafx/loss.py`, `tests-code/test_weighted_multi_loss.py`
 
+### ✅ Completed (Week 1-2)  
+- **Configuration Migration**: Updated all existing YAML configs to use new loss system
+  - ✅ **101 configuration files migrated** from `TimeAndFrequencyDomainLoss` to `WeightedMultiLoss`
+  - ✅ **Automated migration script** created (`scripts/migrate_loss_configs.py`)
+  - ✅ **Safe migration process** with backup files for all changes
+  - ✅ **Full verification** - no old loss configurations remain
+  - 📍 **Location**: `cfg-new/` directory, `MIGRATION_SUMMARY.md`
+
 ### 🔄 In Progress
-- **Configuration Migration**: Updating existing YAML configs to use new loss system
 - **Documentation**: Adding usage examples and migration guide
 
 ### ⏳ Next Up
@@ -429,9 +436,9 @@ trainer:
 4. **Distribution and examples** - Packaging, tutorials, best practices ⏳ **PENDING**
 
 ### 📊 Progress Summary
-- **Completed**: 1/12 major items (8.3%)
-- **In Progress**: 1/12 major items (8.3%)  
-- **Pending**: 10/12 major items (83.4%)
+- **Completed**: 2/12 major items (16.7%)
+- **In Progress**: 0/12 major items (0%)  
+- **Pending**: 10/12 major items (83.3%)
 - **Current Focus**: Callback-based logging system (Week 2 priority)
 
 ---

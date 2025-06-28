@@ -166,24 +166,9 @@ class WeightedMultiLoss(torch.nn.Module):
     
     Args:
         losses: List of dictionaries, each containing:
-            - 'loss': The loss function instance
+            - 'loss': The loss function instance OR class configuration
             - 'weight': The weight for this loss function
             - 'name': Optional name for logging purposes
-    
-    Example:
-        losses = [
-            {
-                'loss': auraloss.time.ESRLoss(),
-                'weight': 0.7,
-                'name': 'esr'
-            },
-            {
-                'loss': auraloss.freq.MultiResolutionSTFTLoss(),
-                'weight': 0.3,
-                'name': 'multi_stft'
-            }
-        ]
-        multi_loss = WeightedMultiLoss(losses)
     """
     
     def __init__(self, losses: list) -> None:
@@ -206,12 +191,20 @@ class WeightedMultiLoss(torch.nn.Module):
             if 'weight' not in loss_config:
                 raise ValueError(f"Loss config {i} must contain 'weight' key")
             
-            loss_fn = loss_config['loss']
+            loss_spec = loss_config['loss']
             weight = loss_config['weight']
             name = loss_config.get('name', f'loss_{i}')
             
-            if not isinstance(loss_fn, torch.nn.Module):
-                raise ValueError(f"Loss function {i} must be a torch.nn.Module")
+            # Handle both instantiated modules and class configurations
+            if isinstance(loss_spec, torch.nn.Module):
+                # Already instantiated
+                loss_fn = loss_spec
+            elif isinstance(loss_spec, dict) and 'class_path' in loss_spec:
+                # Class configuration - let Lightning CLI handle instantiation
+                from lightning.pytorch.cli import instantiate_class
+                loss_fn = instantiate_class((), loss_spec)
+            else:
+                raise ValueError(f"Loss function {i} must be a torch.nn.Module or class configuration")
             
             if not isinstance(weight, (int, float)):
                 raise ValueError(f"Weight for loss {i} must be a number")
