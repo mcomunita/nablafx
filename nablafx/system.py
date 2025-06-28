@@ -11,7 +11,7 @@ import wandb
 from typing import List
 from nablafx.plotting import plot_gb_model, plot_frequency_response_steps
 from nablafx.models import BlackBoxModel, GreyBoxModel
-from nablafx.loss import TimeAndFrequencyDomainLoss
+from nablafx.loss import TimeAndFrequencyDomainLoss, WeightedMultiLoss
 from frechet_audio_distance import FrechetAudioDistance
 
 import sys
@@ -96,10 +96,39 @@ class BaseSystem(pl.LightningModule):
     def compute_and_log_loss(self, pred, target, mode, should_log=True):
 
         losses = self.loss(pred, target)
-        td_loss, fd_loss = losses[0], losses[1]
-        tot_loss = sum(losses)
-
-        if isinstance(self.loss, TimeAndFrequencyDomainLoss):
+        
+        # Handle different loss function formats
+        if isinstance(self.loss, WeightedMultiLoss):
+            # New WeightedMultiLoss format
+            if isinstance(losses, tuple):
+                # Multiple losses: (loss1, loss2, ..., total_loss)
+                individual_losses = losses[:-1]
+                tot_loss = losses[-1]
+            else:
+                # Single loss
+                individual_losses = [losses]
+                tot_loss = losses
+                
+            # Compute scaled losses for logging (unweighted values)
+            scaled_losses = []
+            loss_names = self.loss.get_loss_names()
+            weights = self.loss.get_weights()
+            
+            for loss_val, weight in zip(individual_losses, weights):
+                if weight > 0:
+                    scaled_losses.append(loss_val / weight)
+                else:
+                    scaled_losses.append(loss_val)
+            
+            tot_loss_scaled = sum(scaled_losses)
+            
+        elif isinstance(self.loss, TimeAndFrequencyDomainLoss):
+            # Original TimeAndFrequencyDomainLoss format (backward compatibility)
+            td_loss, fd_loss = losses[0], losses[1]
+            tot_loss = sum(losses)
+            individual_losses = [td_loss, fd_loss]
+            loss_names = ["l1", "mrstft"]
+            
             td_loss_scaled = 0.0
             fd_loss_scaled = 0.0
             if self.loss.time_domain_weight > 0:
@@ -107,9 +136,22 @@ class BaseSystem(pl.LightningModule):
             if self.loss.frequency_domain_weight > 0:
                 fd_loss_scaled = losses[1] / self.loss.frequency_domain_weight
             tot_loss_scaled = td_loss_scaled + fd_loss_scaled
+            scaled_losses = [td_loss_scaled, fd_loss_scaled]
+            
+        else:
+            # Simple loss function (single value)
+            if isinstance(losses, (tuple, list)):
+                tot_loss = sum(losses)
+                individual_losses = list(losses)
+            else:
+                tot_loss = losses
+                individual_losses = [losses]
+            loss_names = ["loss"]
+            scaled_losses = individual_losses
+            tot_loss_scaled = tot_loss
 
         if should_log:
-            # log losses
+            # Log total loss
             self.log(
                 f"loss/{mode}/tot",
                 tot_loss,
@@ -119,25 +161,20 @@ class BaseSystem(pl.LightningModule):
                 logger=True,
                 sync_dist=True,
             )
-            self.log(
-                f"loss/{mode}/l1",
-                td_loss,
-                on_step=False,
-                on_epoch=True,
-                prog_bar=False,
-                logger=True,
-                sync_dist=True,
-            )
-            self.log(
-                f"loss/{mode}/mrstft",
-                fd_loss,
-                on_step=False,
-                on_epoch=True,
-                prog_bar=False,
-                logger=True,
-                sync_dist=True,
-            )
-            # log scaled losses
+            
+            # Log individual losses
+            for loss_val, loss_name in zip(individual_losses, loss_names):
+                self.log(
+                    f"loss/{mode}/{loss_name}",
+                    loss_val,
+                    on_step=False,
+                    on_epoch=True,
+                    prog_bar=False,
+                    logger=True,
+                    sync_dist=True,
+                )
+            
+            # Log scaled losses (unweighted)
             self.log(
                 f"loss_scaled/{mode}/tot",
                 tot_loss_scaled,
@@ -147,24 +184,17 @@ class BaseSystem(pl.LightningModule):
                 logger=True,
                 sync_dist=True,
             )
-            self.log(
-                f"loss_scaled/{mode}/l1",
-                td_loss_scaled,
-                on_step=False,
-                on_epoch=True,
-                prog_bar=False,
-                logger=True,
-                sync_dist=True,
-            )
-            self.log(
-                f"loss_scaled/{mode}/mrstft",
-                fd_loss_scaled,
-                on_step=False,
-                on_epoch=True,
-                prog_bar=False,
-                logger=True,
-                sync_dist=True,
-            )
+            
+            for scaled_loss, loss_name in zip(scaled_losses, loss_names):
+                self.log(
+                    f"loss_scaled/{mode}/{loss_name}",
+                    scaled_loss,
+                    on_step=False,
+                    on_epoch=True,
+                    prog_bar=False,
+                    logger=True,
+                    sync_dist=True,
+                )
 
         if torch.isnan(tot_loss):
             print("NaN loss encountered. Exiting...")
