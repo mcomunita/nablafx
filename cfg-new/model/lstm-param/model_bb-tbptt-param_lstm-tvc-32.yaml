@@ -1,0 +1,36 @@
+model:
+  class_path: nablafx.system.BlackBoxSystemWithTBPTT
+  init_args:
+    lr: 0.001
+    log_media_every_n_steps: 90000
+    step_num_samples: 4800 # 100ms
+
+    model:
+      class_path: nablafx.models.BlackBoxModel
+      init_args:
+        processor:
+          class_path: nablafx.lstm.LSTM
+          init_args:
+            num_inputs: 1
+            num_outputs: 1
+            num_controls: 1
+            hidden_size: 32
+            num_layers: 1
+            residual: false
+            direct_path: false
+            cond_type: tvcond # null, fixed, tvcond
+            cond_block_size: 128 # block size for tvcond
+            cond_num_layers: 1 # number of lstm layers for tvcond
+
+    loss:
+      class_path: nablafx.loss.WeightedMultiLoss
+      init_args:
+        losses:
+          - loss:
+              class_path: torch.nn.L1Loss
+            weight: .5
+            name: "l1"
+          - loss:
+              class_path: auraloss.freq.MultiResolutionSTFTLoss
+            weight: .5
+            name: "mrstft"

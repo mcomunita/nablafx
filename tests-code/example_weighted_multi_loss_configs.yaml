@@ -20,11 +20,11 @@ model:
           - loss:
               class_path: torch.nn.L1Loss
             weight: 0.5
-            name: "time_domain"
+            name: "l1"
           - loss:
               class_path: auraloss.freq.MultiResolutionSTFTLoss
             weight: 0.5
-            name: "frequency_domain"
+            name: "mrstft"
 
 ---
 # Example 2: More complex multi-loss setup

@@ -1,0 +1,38 @@
+model:
+  class_path: nablafx.system.BlackBoxSystem
+  init_args:
+    lr: 0.01
+    log_media_every_n_steps: 3000
+
+    model:
+      class_path: nablafx.models.BlackBoxModel
+      init_args:
+        processor:
+          class_path: nablafx.s4.S4
+          init_args:
+            num_inputs: 1
+            num_outputs: 1
+            num_controls: 1
+            num_blocks: 8
+            s4_state_dim: 32
+            channel_width: 16
+            batchnorm: False
+            residual: True
+            direct_path: False
+            cond_type: tvfilm
+            cond_block_size: 128
+            cond_num_layers: 1
+            act_type: tanh
+            s4_learning_rate: 0.01
+
+    loss:
+      class_path: nablafx.loss.TimeAndFrequencyDomainLoss
+      init_args:
+        time_domain_weight: .5
+        frequency_domain_weight: .5
+
+        time_domain_loss:
+          class_path: torch.nn.L1Loss
+
+        frequency_domain_loss:
+          class_path: auraloss.freq.MultiResolutionSTFTLoss

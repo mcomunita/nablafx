@@ -1,0 +1,11 @@
+data:
+  class_path: nablafx.data.DryWetFilesPluginDataModule
+  init_args:
+    root_dir_dry: /homes/mc309/nnlin-afx-mod/data/TONETWIST-AFX-DATASET/DIGITAL/DRY/test
+    root_dir_wet: /homes/mc309/nnlin-afx-mod/data/TONETWIST-AFX-DATASET/DIGITAL/Custom-DynamicFuzz/test/G050_S100_A000_R100_V100
+    data_to_use: 1.0
+    sample_length: 240000 # 5s
+    sample_rate: 48000
+    preload: True
+    batch_size: 8
+    num_workers: 4

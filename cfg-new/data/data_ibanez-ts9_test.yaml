@@ -1,0 +1,11 @@
+data:
+  class_path: nablafx.data.DryWetFilesPluginDataModule
+  init_args:
+    root_dir_dry: data/TONETWIST-AFX-DATASET/EXTERNAL/keith-bloemer/DRY/test
+    root_dir_wet: data/TONETWIST-AFX-DATASET/EXTERNAL/keith-bloemer/Ibanez-TS9/test/V050_T050_D100
+    data_to_use: 1.0
+    sample_length: 240000 # 5s
+    sample_rate: 48000
+    preload: True
+    batch_size: 8
+    num_workers: 4

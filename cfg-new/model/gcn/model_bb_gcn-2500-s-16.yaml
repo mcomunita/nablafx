@@ -1,0 +1,43 @@
+model:
+  class_path: nablafx.system.BlackBoxSystem
+  init_args:
+    lr: 0.005
+    log_media_every_n_steps: 3000
+
+    model:
+      class_path: nablafx.models.BlackBoxModel
+      init_args:
+        processor:
+          class_path: nablafx.gcn.GCN
+          init_args:
+            num_inputs: 1
+            num_outputs: 1
+            num_controls: 0
+            num_blocks: 5
+            kernel_size: 13
+            dilation_growth: 10
+            channel_width: 16
+            channel_growth: 1
+            stack_size: 12
+            groups: 1
+            bias: true
+            causal: true
+            batchnorm: false # active only when cond_type = None
+            residual: true
+            direct_path: false
+            cond_type: null # null, film, tfilm, tvfilm
+            cond_block_size: 128 # block size for tfilm or tvfilm
+            cond_num_layers: 1 # number of lstm layers for tfilm or tvfilm
+
+    loss:
+      class_path: nablafx.loss.WeightedMultiLoss
+      init_args:
+        losses:
+          - loss:
+              class_path: torch.nn.L1Loss
+            weight: .5
+            name: "l1"
+          - loss:
+              class_path: auraloss.freq.MultiResolutionSTFTLoss
+            weight: .5
+            name: "mrstft"
