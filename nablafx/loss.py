@@ -157,3 +157,96 @@ class TimeAndFrequencyDomainLoss(torch.nn.Module):
         td_loss = self.time_domain_loss(x, y)
         fd_loss = self.frequency_domain_loss(x, y)
         return (self.time_domain_weight * td_loss, self.frequency_domain_weight * fd_loss)
+
+
+class WeightedMultiLoss(torch.nn.Module):
+    """
+    A flexible loss function that combines multiple loss functions with individual weights.
+    Each loss function can have its own parameters and weight.
+    
+    Args:
+        losses: List of dictionaries, each containing:
+            - 'loss': The loss function instance
+            - 'weight': The weight for this loss function
+            - 'name': Optional name for logging purposes
+    
+    Example:
+        losses = [
+            {
+                'loss': auraloss.time.ESRLoss(),
+                'weight': 0.7,
+                'name': 'esr'
+            },
+            {
+                'loss': auraloss.freq.MultiResolutionSTFTLoss(),
+                'weight': 0.3,
+                'name': 'multi_stft'
+            }
+        ]
+        multi_loss = WeightedMultiLoss(losses)
+    """
+    
+    def __init__(self, losses: list) -> None:
+        super().__init__()
+        
+        if not losses:
+            raise ValueError("At least one loss function must be provided")
+        
+        self.loss_functions = torch.nn.ModuleList()
+        self.weights = []
+        self.names = []
+        
+        for i, loss_config in enumerate(losses):
+            if not isinstance(loss_config, dict):
+                raise ValueError(f"Loss config {i} must be a dictionary")
+            
+            if 'loss' not in loss_config:
+                raise ValueError(f"Loss config {i} must contain 'loss' key")
+            
+            if 'weight' not in loss_config:
+                raise ValueError(f"Loss config {i} must contain 'weight' key")
+            
+            loss_fn = loss_config['loss']
+            weight = loss_config['weight']
+            name = loss_config.get('name', f'loss_{i}')
+            
+            if not isinstance(loss_fn, torch.nn.Module):
+                raise ValueError(f"Loss function {i} must be a torch.nn.Module")
+            
+            if not isinstance(weight, (int, float)):
+                raise ValueError(f"Weight for loss {i} must be a number")
+            
+            self.loss_functions.append(loss_fn)
+            self.weights.append(float(weight))
+            self.names.append(name)
+    
+    def forward(self, x, y):
+        """
+        Compute weighted sum of all loss functions.
+        
+        Returns:
+            If only one loss function: returns the weighted loss value
+            If multiple loss functions: returns tuple of (individual_losses..., total_loss)
+        """
+        individual_losses = []
+        total_loss = 0.0
+        
+        for loss_fn, weight in zip(self.loss_functions, self.weights):
+            loss_value = loss_fn(x, y)
+            weighted_loss = weight * loss_value
+            individual_losses.append(weighted_loss)
+            total_loss += weighted_loss
+        
+        # Return format consistent with existing TimeAndFrequencyDomainLoss
+        if len(individual_losses) == 1:
+            return individual_losses[0]
+        else:
+            return tuple(individual_losses + [total_loss])
+    
+    def get_loss_names(self):
+        """Return list of loss function names for logging purposes."""
+        return self.names
+    
+    def get_weights(self):
+        """Return list of weights for each loss function."""
+        return self.weights
