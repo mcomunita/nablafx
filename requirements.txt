@@ -8,9 +8,9 @@ matplotlib==3.9.1
 natsort
 numpy==2.0.0
 scipy==1.13.1
-torch==2.3.1
-torchaudio==2.3.1
+torch==2.2.2
+torchaudio==2.2.2
 torchmetrics==1.4.0.post0
-torchvision==0.18.1
+torchvision==0.17.2
 typing-extensions==4.12.2
 wandb==0.17.4
