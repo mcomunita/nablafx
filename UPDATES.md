@@ -18,11 +18,23 @@
   - ✅ **Full verification** - no old loss configurations remain
   - 📍 **Location**: `cfg-new/` directory, `MIGRATION_SUMMARY.md`
 
+### ✅ Completed (Week 2)
+- **Callback System**: Extract logging functions from system.py into callback classes
+  - ✅ Created modular callback architecture using PyTorch Lightning's callback system
+  - ✅ **AudioLoggingCallback** - Configurable audio sample logging with W&B integration
+  - ✅ **MetricsLoggingCallback** - Flexible metrics computation and logging system
+  - ✅ **FrequencyResponseCallback** - Frequency response visualization at configurable intervals
+  - ✅ **FADComputationCallback** - Multi-model FAD score computation (VGGish, PANN, CLAP, AFX-Rep)
+  - ✅ **ParameterVisualizationCallback** - Gray-box model parameter and response visualization
+  - ✅ **Configuration-driven setup** - Full YAML configuration support for all callbacks
+  - ✅ **Backward compatibility** - Works with existing system classes without breaking changes
+  - 📍 **Location**: `nablafx/callbacks/`, `examples/callback_system_config.yaml`
+
 ### 🔄 In Progress
 - **Documentation**: Adding usage examples and migration guide
 
 ### ⏳ Next Up
-- **Callback System**: Extract logging functions from system.py into callback classes
+- **Package Structure Refactoring**: Reorganize modules into logical subpackages
 
 ---
 
@@ -436,10 +448,10 @@ trainer:
 4. **Distribution and examples** - Packaging, tutorials, best practices ⏳ **PENDING**
 
 ### 📊 Progress Summary
-- **Completed**: 2/12 major items (16.7%)
+- **Completed**: 3/12 major items (25.0%)
 - **In Progress**: 0/12 major items (0%)  
-- **Pending**: 10/12 major items (83.3%)
-- **Current Focus**: Callback-based logging system (Week 2 priority)
+- **Pending**: 9/12 major items (75.0%)
+- **Current Focus**: Package structure refactoring (Week 3-4 priority)
 
 ---
 
