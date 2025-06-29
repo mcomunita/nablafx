@@ -31,13 +31,14 @@ model:
             act_type: tanh # tanh, prelu, rational
 
     loss:
-      class_path: nablafx.loss.TimeAndFrequencyDomainLoss
+      class_path: nablafx.loss.WeightedMultiLoss
       init_args:
-        time_domain_weight: 10.0
-        frequency_domain_weight: 1.0
-
-        time_domain_loss:
-          class_path: torch.nn.L1Loss
-
-        frequency_domain_loss:
-          class_path: auraloss.freq.MultiResolutionSTFTLoss
+        losses:
+          - loss:
+              class_path: torch.nn.L1Loss
+            weight: 10.0
+            name: "l1"
+          - loss:
+              class_path: auraloss.freq.MultiResolutionSTFTLoss
+            weight: 1.0
+            name: "mrstft"

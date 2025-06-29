@@ -2,6 +2,7 @@ model:
   class_path: nablafx.system.BlackBoxSystem
   init_args:
     lr: 0.005
+    use_callbacks: true
     log_media_every_n_steps: 1000
 
     model:

@@ -13,6 +13,40 @@ trainer:
       group: Multidrive-FFuzz_LSTM-TVC
       tags: ["Multidrive-FFuzz", "LSTM-TVC"]
   callbacks:
+    # 🎵 NablAFx Audio Logging - Replaces built-in log_audio()
+    - class_path: nablafx.callbacks.AudioLoggingCallback
+      init_args:
+        log_every_n_steps: 5000 # Less frequent for TBPTT (longer training)
+        sample_rate: 48000
+        max_samples_per_batch: 3
+        log_test_batches: 10
+        log_input_target_once: true
+
+    # 📊 NablAFx Metrics Logging - Replaces built-in compute_and_log_metrics()
+    - class_path: nablafx.callbacks.MetricsLoggingCallback
+      init_args:
+        log_on_step: false
+        log_on_epoch: true
+        sync_dist: true
+
+    # 🎛️ NablAFx Frequency Response - Replaces built-in log_frequency_response()
+    - class_path: nablafx.callbacks.FrequencyResponseCallback
+      init_args:
+        log_on_train_start: false
+        log_on_train_end: false
+        log_on_test_end: true
+        log_every_n_epochs: 50 # Less frequent for longer training
+
+    # 🎯 NablAFx FAD Computation - Replaces built-in compute_and_log_fad()
+    - class_path: nablafx.callbacks.FADComputationCallback
+      init_args:
+        compute_on_train_end: true
+        compute_on_test_end: true
+        compute_every_n_epochs: 25 # Less frequent for longer training
+        models: ["vggish", "pann", "clap", "afx-rep"]
+        checkpoint_dir: "checkpoints_fad"
+
+    # ⚡ Standard Lightning Callbacks
     # - class_path: pytorch_lightning.callbacks.ModelCheckpoint
     - class_path: lightning.pytorch.callbacks.model_checkpoint.ModelCheckpoint
       init_args:

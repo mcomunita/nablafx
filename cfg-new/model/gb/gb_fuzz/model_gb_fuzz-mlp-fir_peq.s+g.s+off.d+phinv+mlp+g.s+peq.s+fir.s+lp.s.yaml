@@ -2,6 +2,7 @@ model:
   class_path: nablafx.system.GreyBoxSystem
   init_args:
     lr: 0.1
+    use_callbacks: true
     log_media_every_n_steps: 3000
 
     model:

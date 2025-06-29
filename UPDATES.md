@@ -28,10 +28,11 @@
   - ✅ **ParameterVisualizationCallback** - Gray-box model parameter and response visualization
   - ✅ **Configuration-driven setup** - Full YAML configuration support for all callbacks
   - ✅ **Backward compatibility** - Works with existing system classes without breaking changes
-  - 📍 **Location**: `nablafx/callbacks/`, `examples/callback_system_config.yaml`
+  - ✅ **Trainer configuration migration** - Updated all `cfg-new/trainer/` configs to use callbacks
+  - 📍 **Location**: `nablafx/callbacks/`, `cfg-new/trainer/`, `examples/`
 
 ### 🔄 In Progress
-- **Documentation**: Adding usage examples and migration guide
+- **Documentation**: Finalizing usage examples and migration guide for callback system
 
 ### ⏳ Next Up
 - **Package Structure Refactoring**: Reorganize modules into logical subpackages
@@ -438,7 +439,7 @@ trainer:
 ### Phase 2: Core Audio Features (Weeks 5-8) - 🔄 **STARTED EARLY**
 1. **Processor architecture refactoring** - Clean separation and interfaces ⏳ **PENDING**
 2. ✅ **Loss function configuration system** - Flexible loss composition via YAML ✅ **COMPLETED**
-3. **Callback-based logging system** - Modular, configurable logging 🔄 **NEXT UP**
+3. ✅ **Callback-based logging system** - Modular, configurable logging ✅ **COMPLETED**
 4. **Model factory patterns** - Easy model composition ⏳ **PENDING**
 
 ### Phase 3: Advanced Features (Weeks 9-12) - ⏳ **FUTURE**
@@ -448,9 +449,9 @@ trainer:
 4. **Distribution and examples** - Packaging, tutorials, best practices ⏳ **PENDING**
 
 ### 📊 Progress Summary
-- **Completed**: 3/12 major items (25.0%)
+- **Completed**: 4/12 major items (33.3%)
 - **In Progress**: 0/12 major items (0%)  
-- **Pending**: 9/12 major items (75.0%)
+- **Pending**: 8/12 major items (66.7%)
 - **Current Focus**: Package structure refactoring (Week 3-4 priority)
 
 ---

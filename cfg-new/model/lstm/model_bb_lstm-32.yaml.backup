@@ -22,13 +22,14 @@ model:
             cond_num_layers: 1 # number of lstm layers for tvcond
 
     loss:
-      class_path: nablafx.loss.TimeAndFrequencyDomainLoss
+      class_path: nablafx.loss.WeightedMultiLoss
       init_args:
-        time_domain_weight: .5
-        frequency_domain_weight: .5
-
-        time_domain_loss:
-          class_path: torch.nn.L1Loss
-
-        frequency_domain_loss:
-          class_path: auraloss.freq.MultiResolutionSTFTLoss
+        losses:
+          - loss:
+              class_path: torch.nn.L1Loss
+            weight: .5
+            name: "l1"
+          - loss:
+              class_path: auraloss.freq.MultiResolutionSTFTLoss
+            weight: .5
+            name: "mrstft"
