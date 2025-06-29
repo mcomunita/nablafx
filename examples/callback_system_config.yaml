@@ -1,0 +1,98 @@
+# Example configuration showing how to use the new callback system
+# This replaces the hardcoded logging in system.py with configurable callbacks
+
+# Model configuration (same as before)
+model:
+  class_path: nablafx.models.BlackBoxModel
+  init_args:
+    # model parameters...
+
+# Loss configuration (using the new WeightedMultiLoss system)
+loss:
+  class_path: nablafx.loss.WeightedMultiLoss
+  init_args:
+    losses:
+      - loss:
+          class_path: auraloss.time.ESRLoss
+        weight: 0.4
+        name: "esr"
+      - loss:
+          class_path: auraloss.freq.MultiResolutionSTFTLoss
+          init_args:
+            fft_sizes: [1024, 2048, 512]
+        weight: 0.6
+        name: "multi_stft"
+
+# System configuration (now with minimal logging)
+system:
+  class_path: nablafx.system.BlackBoxSystem
+  init_args:
+    lr: 1e-4
+    # Note: log_media_every_n_steps is now handled by callbacks
+
+# Trainer configuration with callbacks
+trainer:
+  max_epochs: 100
+  accelerator: gpu
+  devices: 1
+
+  # NEW: Configurable callback system
+  callbacks:
+    # Audio logging callback
+    - class_path: nablafx.callbacks.AudioLoggingCallback
+      init_args:
+        log_every_n_steps: 10000
+        sample_rate: 48000
+        max_samples_per_batch: 5
+        log_test_batches: 10
+        log_input_target_once: true
+
+    # Metrics logging callback
+    - class_path: nablafx.callbacks.MetricsLoggingCallback
+      init_args:
+        log_on_step: false
+        log_on_epoch: true
+        sync_dist: true
+        # Optional: customize metrics
+        # metrics_config:
+        #   mae: "mae"
+        #   custom_metric:
+        #     class_path: "auraloss.time.ESRLoss"
+        #     init_args: {}
+
+    # Frequency response callback
+    - class_path: nablafx.callbacks.FrequencyResponseCallback
+      init_args:
+        log_on_train_start: false
+        log_on_train_end: false
+        log_on_test_end: true
+        log_every_n_epochs: 10 # Log every 10 epochs during validation
+
+    # FAD computation callback
+    - class_path: nablafx.callbacks.FADComputationCallback
+      init_args:
+        compute_on_train_end: true
+        compute_on_test_end: true
+        compute_every_n_epochs: 5 # Compute FAD every 5 epochs
+        models: ["vggish", "pann", "clap", "afx-rep"]
+        checkpoint_dir: "checkpoints_fad"
+        # Optional: customize model configs
+        # model_configs:
+        #   vggish:
+        #     sample_rate: 16000
+        #     use_pca: false
+
+    # Parameter visualization (only for gray-box models)
+    - class_path: nablafx.callbacks.ParameterVisualizationCallback
+      init_args:
+        log_on_train_start: true
+        log_on_validation: true
+        log_on_test: true
+        log_test_batches: 10
+        max_samples_per_batch: 3
+
+# Data configuration (same as before)
+data:
+  class_path: nablafx.data.DataModule
+  init_args:
+    # data parameters...
