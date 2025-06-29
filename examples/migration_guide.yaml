@@ -1,0 +1,102 @@
+# ====================================================================
+# MIGRATION EXAMPLE: Using Callbacks with Existing System Classes
+# ====================================================================
+
+# This shows how to migrate from hardcoded logging to callback-based logging
+# while maintaining backward compatibility
+
+# OPTION 1: Continue using existing approach (no changes needed)
+system_old_style:
+  class_path: nablafx.system.BlackBoxSystem
+  init_args:
+    lr: 1e-4
+    log_media_every_n_steps: 10000
+    # use_callbacks: false (default)
+
+# OPTION 2: Use existing system classes with callbacks
+system_with_callbacks:
+  class_path: nablafx.system.BlackBoxSystem
+  init_args:
+    lr: 1e-4
+    use_callbacks: true # Enable callback mode
+    # log_media_every_n_steps ignored when use_callbacks=true
+
+# OPTION 3: Use new simplified system classes (fully callback-based)
+system_new_style:
+  class_path: nablafx.examples.simplified_systems.BlackBoxSystemWithCallbacks
+  init_args:
+    lr: 1e-4
+    # No logging parameters needed
+
+# ====================================================================
+# Trainer configuration with callbacks (for OPTION 2 and 3)
+# ====================================================================
+
+trainer:
+  max_epochs: 100
+  accelerator: gpu
+  devices: 1
+
+  callbacks:
+    # Audio logging (replaces built-in log_audio)
+    - class_path: nablafx.callbacks.AudioLoggingCallback
+      init_args:
+        log_every_n_steps: 10000 # Same as old log_media_every_n_steps
+        sample_rate: 48000
+        max_samples_per_batch: 5
+        log_test_batches: 10
+        log_input_target_once: true
+
+    # Metrics logging (replaces built-in compute_and_log_metrics)
+    - class_path: nablafx.callbacks.MetricsLoggingCallback
+      init_args:
+        log_on_epoch: true
+        sync_dist: true
+
+    # Frequency response (replaces built-in log_frequency_response)
+    - class_path: nablafx.callbacks.FrequencyResponseCallback
+      init_args:
+        log_on_test_end: true
+        # log_every_n_epochs: 10  # Optional: log during validation too
+
+    # FAD computation (replaces built-in compute_and_log_fad)
+    - class_path: nablafx.callbacks.FADComputationCallback
+      init_args:
+        compute_on_train_end: true
+        compute_on_test_end: true
+        models: ["vggish", "pann", "clap", "afx-rep"]
+        checkpoint_dir: "checkpoints_fad"
+
+    # Parameter visualization (for gray-box models only)
+    - class_path: nablafx.callbacks.ParameterVisualizationCallback
+      init_args:
+        log_on_train_start: true
+        log_on_validation: true
+        log_on_test: true
+        max_samples_per_batch: 3
+
+    # Standard Lightning callbacks
+    - class_path: lightning.pytorch.callbacks.ModelCheckpoint
+      init_args:
+        monitor: "loss/val/tot"
+        mode: "min"
+        save_top_k: 3
+
+    - class_path: lightning.pytorch.callbacks.EarlyStopping
+      init_args:
+        monitor: "loss/val/tot"
+        mode: "min"
+        patience: 50
+# ====================================================================
+# Migration path recommendations:
+#
+# 1. IMMEDIATE: Use OPTION 2 - just add use_callbacks: true and callbacks
+#    - Zero code changes to existing systems
+#    - All existing configs work as-is
+#    - Just add callback configuration
+#
+# 2. FUTURE: Gradually move to OPTION 3 for new projects
+#    - Cleaner system classes
+#    - Full separation of concerns
+#    - Better maintainability
+# ====================================================================

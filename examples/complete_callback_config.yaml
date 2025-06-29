@@ -1,0 +1,181 @@
+# =============================================================================
+# COMPLETE EXAMPLE: NablAFx with Callback-Based Logging
+# =============================================================================
+#
+# This configuration shows how to use the new callback system with existing
+# NablAFx system classes. Just add `use_callbacks: true` and configure callbacks!
+#
+# Benefits:
+# - ✅ No code changes needed - just config changes
+# - ✅ Modular, configurable logging
+# - ✅ Better performance - only run logging you need
+# - ✅ Easy experimentation with different logging setups
+# =============================================================================
+
+# System Configuration (UPDATED with callback support)
+system:
+  class_path: nablafx.system.BlackBoxSystem # Or GreyBoxSystem
+  init_args:
+    lr: 1e-4
+    use_callbacks: true # 🆕 Enable callback-based logging
+    # log_media_every_n_steps: ignored when use_callbacks=true
+
+# Loss Configuration (using WeightedMultiLoss system)
+loss:
+  class_path: nablafx.loss.WeightedMultiLoss
+  init_args:
+    losses:
+      - loss:
+          class_path: auraloss.time.ESRLoss
+        weight: 0.3
+        name: "esr"
+      - loss:
+          class_path: auraloss.freq.MultiResolutionSTFTLoss
+          init_args:
+            fft_sizes: [1024, 2048, 512]
+            hop_sizes: [256, 512, 128]
+            win_lengths: [1024, 2048, 512]
+        weight: 0.4
+        name: "multi_stft"
+      - loss:
+          class_path: torch.nn.L1Loss
+        weight: 0.3
+        name: "l1"
+
+# Model Configuration (same as before)
+model:
+  class_path: nablafx.models.BlackBoxModel
+  init_args:
+    # Your model parameters here
+    pass
+
+# Data Configuration (same as before)
+data:
+  class_path: nablafx.data.DataModule
+  init_args:
+    # Your data parameters here
+    pass
+
+# Trainer Configuration with Callbacks (🆕 NEW SECTION)
+trainer:
+  max_epochs: 200
+  accelerator: gpu
+  devices: 1
+  precision: 32
+  gradient_clip_val: 1.0
+  check_val_every_n_epoch: 1
+  log_every_n_steps: 50
+
+  # 🎯 CALLBACK CONFIGURATION - This replaces built-in logging
+  callbacks:
+    # 🎵 Audio Logging - Replaces system.log_audio()
+    - class_path: nablafx.callbacks.AudioLoggingCallback
+      init_args:
+        log_every_n_steps: 5000 # How often to log during validation
+        sample_rate: 48000 # Audio sample rate
+        max_samples_per_batch: 3 # Max samples to log per batch
+        log_test_batches: 15 # Number of test batches to log
+        log_input_target_once: true # Log input/target only once during val
+
+    # 📊 Metrics Logging - Replaces system.compute_and_log_metrics()
+    - class_path: nablafx.callbacks.MetricsLoggingCallback
+      init_args:
+        log_on_step: false # Don't log every step
+        log_on_epoch: true # Log at end of each epoch
+        sync_dist: true # Sync across distributed processes
+        # Optional: customize metrics
+        # metrics_config:
+        #   mae: "mae"
+        #   custom_esr:
+        #     class_path: "auraloss.time.ESRLoss"
+        #     init_args: {}
+
+    # 🎛️ Frequency Response - Replaces system.log_frequency_response()
+    - class_path: nablafx.callbacks.FrequencyResponseCallback
+      init_args:
+        log_on_train_start: false # Don't log at start (memory intensive)
+        log_on_train_end: false # Don't log at end (memory intensive)
+        log_on_test_end: true # Log at test end
+        log_every_n_epochs: 25 # Log every 25 epochs during validation
+
+    # 🎯 FAD Computation - Replaces system.compute_and_log_fad()
+    - class_path: nablafx.callbacks.FADComputationCallback
+      init_args:
+        compute_on_train_end: true # Compute FAD when training ends
+        compute_on_test_end: true # Compute FAD when testing ends
+        compute_every_n_epochs: 10 # Compute FAD every 10 epochs during val
+        models: ["vggish", "pann", "clap", "afx-rep"] # All FAD models
+        checkpoint_dir: "checkpoints_fad"
+        # Optional: customize model settings
+        # model_configs:
+        #   vggish:
+        #     sample_rate: 16000
+        #     use_pca: false
+
+    # 🎨 Parameter Visualization - For gray-box models only
+    # Uncomment if using GreyBoxSystem
+    # - class_path: nablafx.callbacks.ParameterVisualizationCallback
+    #   init_args:
+    #     log_on_train_start: true         # Log parameters at start
+    #     log_on_validation: true          # Log during validation
+    #     log_on_test: true                # Log during testing
+    #     log_test_batches: 10             # Number of test batches to visualize
+    #     max_samples_per_batch: 2         # Max samples to visualize per batch
+
+    # ⚡ Standard PyTorch Lightning Callbacks
+    - class_path: lightning.pytorch.callbacks.ModelCheckpoint
+      init_args:
+        monitor: "loss/val/tot"
+        mode: "min"
+        save_top_k: 3
+        save_last: true
+        filename: "best-{epoch:02d}-{loss/val/tot:.4f}"
+        auto_insert_metric_name: false
+
+    - class_path: lightning.pytorch.callbacks.EarlyStopping
+      init_args:
+        monitor: "loss/val/tot"
+        mode: "min"
+        patience: 75
+        verbose: true
+        check_finite: true
+
+    - class_path: lightning.pytorch.callbacks.LearningRateMonitor
+      init_args:
+        logging_interval: "epoch"
+        log_momentum: false
+
+# Logger Configuration
+logger:
+  class_path: lightning.pytorch.loggers.WandbLogger
+  init_args:
+    project: "nablafx-callback-system"
+    name: "experiment-with-callbacks"
+    save_dir: "./logs"
+    log_model: false
+# =============================================================================
+# MIGRATION NOTES:
+#
+# From OLD approach:
+#   system:
+#     class_path: nablafx.system.BlackBoxSystem
+#     init_args:
+#       lr: 1e-4
+#       log_media_every_n_steps: 5000
+#
+# To NEW approach:
+#   system:
+#     class_path: nablafx.system.BlackBoxSystem
+#     init_args:
+#       lr: 1e-4
+#       use_callbacks: true  # 🆕 ADD THIS LINE
+#
+#   trainer:
+#     callbacks:  # 🆕 ADD CALLBACKS SECTION
+#       - class_path: nablafx.callbacks.AudioLoggingCallback
+#         init_args:
+#           log_every_n_steps: 5000  # Same as old log_media_every_n_steps
+#       # ... other callbacks
+#
+# That's it! No other changes needed.
+# =============================================================================

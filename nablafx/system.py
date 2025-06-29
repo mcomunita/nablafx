@@ -8,7 +8,7 @@ import lightning as pl
 import torchmetrics as tm
 import wandb
 
-from typing import List
+from typing import List, Optional
 from nablafx.plotting import plot_gb_model, plot_frequency_response_steps
 from nablafx.models import BlackBoxModel, GreyBoxModel
 from nablafx.loss import TimeAndFrequencyDomainLoss, WeightedMultiLoss
@@ -27,24 +27,49 @@ if module_path not in sys.path:
 
 
 class BaseSystem(pl.LightningModule):
-    def __init__(self, loss: torch.nn.Module, lr: float = 1e-4, log_media_every_n_steps: int = 10000):
+    def __init__(
+        self,
+        loss: torch.nn.Module,
+        lr: float = 1e-4,
+        log_media_every_n_steps: int = 10000,
+        use_callbacks: bool = False,
+    ):
+        """
+        Base system for audio effect modeling.
+
+        Args:
+            loss: Loss function to use
+            lr: Learning rate
+            log_media_every_n_steps: Steps between media logging (ignored if use_callbacks=True)
+            use_callbacks: If True, relies on callbacks for logging instead of built-in methods.
+                          When True, the following methods become no-ops:
+                          - compute_and_log_metrics
+                          - log_audio
+                          - log_frequency_response
+                          - compute_and_log_fad
+        """
         super().__init__()
         self.loss = loss
         self.lr = lr
         self.log_media_every_n_steps = log_media_every_n_steps
         self.log_media_counter = 0
         self.log_input_and_target_flag = True
+        self.use_callbacks = use_callbacks
 
-        # metrics
-        self.metrics = {
-            "mae": tm.MeanAbsoluteError(),
-            "mape": tm.MeanAbsolutePercentageError(),
-            "mse": tm.MeanSquaredError(),
-            "cossim": tm.CosineSimilarity(),
-            "logcosh": auraloss.time.LogCoshLoss(),
-            "esr": auraloss.time.ESRLoss(),
-            "dcloss": auraloss.time.DCLoss(),
-        }
+        # metrics (only used if not using callbacks)
+        if not self.use_callbacks:
+            self.metrics = {
+                "mae": tm.MeanAbsoluteError(),
+                "mape": tm.MeanAbsolutePercentageError(),
+                "mse": tm.MeanSquaredError(),
+                "cossim": tm.CosineSimilarity(),
+                "logcosh": auraloss.time.LogCoshLoss(),
+                "esr": auraloss.time.ESRLoss(),
+                "dcloss": auraloss.time.DCLoss(),
+            }
+        else:
+            self.metrics = {}
+            print("📋 Using callback-based logging - built-in logging methods disabled")
 
     def forward(self, input: torch.Tensor, params: torch.Tensor, train: bool = False):
         return self.model(input, params, train=train)
@@ -63,23 +88,29 @@ class BaseSystem(pl.LightningModule):
         raise NotImplementedError
 
     def on_train_start(self):
-        # log gradients
+        # log gradients (always enabled)
         wandb.watch(self.model, log_freq=100)
-        # self.log_frequency_response() # atm needs too much memory
+        # Frequency response logging handled by callbacks if use_callbacks=True
+        if not self.use_callbacks:
+            pass  # self.log_frequency_response() # atm needs too much memory
 
     def on_before_optimizer_step(self, optimizer):
-        # Compute the 2-norm for each layer
+        # Compute the 2-norm for each layer (always enabled)
         # If using mixed precision, the gradients are already unscaled here
         norms = pl.pytorch.utilities.grad_norm(self, norm_type=2)
         self.log_dict(norms)
 
     def on_train_end(self):
-        # self.log_frequency_response() # atm needs too much memory
-        self.compute_and_log_fad(mode="val")
+        # FAD computation handled by callbacks if use_callbacks=True
+        if not self.use_callbacks:
+            # self.log_frequency_response() # atm needs too much memory
+            self.compute_and_log_fad(mode="val")
 
     def on_test_epoch_end(self):
-        self.log_frequency_response()
-        self.compute_and_log_fad(mode="test")
+        # Logging handled by callbacks if use_callbacks=True
+        if not self.use_callbacks:
+            self.log_frequency_response()
+            self.compute_and_log_fad(mode="test")
 
     def configure_optimizers(self):
         optimizer = torch.optim.AdamW(
@@ -96,7 +127,7 @@ class BaseSystem(pl.LightningModule):
     def compute_and_log_loss(self, pred, target, mode, should_log=True):
 
         losses = self.loss(pred, target)
-        
+
         # Handle different loss function formats
         if isinstance(self.loss, WeightedMultiLoss):
             # New WeightedMultiLoss format
@@ -108,27 +139,27 @@ class BaseSystem(pl.LightningModule):
                 # Single loss
                 individual_losses = [losses]
                 tot_loss = losses
-                
+
             # Compute scaled losses for logging (unweighted values)
             scaled_losses = []
             loss_names = self.loss.get_loss_names()
             weights = self.loss.get_weights()
-            
+
             for loss_val, weight in zip(individual_losses, weights):
                 if weight > 0:
                     scaled_losses.append(loss_val / weight)
                 else:
                     scaled_losses.append(loss_val)
-            
+
             tot_loss_scaled = sum(scaled_losses)
-            
+
         elif isinstance(self.loss, TimeAndFrequencyDomainLoss):
             # Original TimeAndFrequencyDomainLoss format (backward compatibility)
             td_loss, fd_loss = losses[0], losses[1]
             tot_loss = sum(losses)
             individual_losses = [td_loss, fd_loss]
             loss_names = ["l1", "mrstft"]
-            
+
             td_loss_scaled = 0.0
             fd_loss_scaled = 0.0
             if self.loss.time_domain_weight > 0:
@@ -137,7 +168,7 @@ class BaseSystem(pl.LightningModule):
                 fd_loss_scaled = losses[1] / self.loss.frequency_domain_weight
             tot_loss_scaled = td_loss_scaled + fd_loss_scaled
             scaled_losses = [td_loss_scaled, fd_loss_scaled]
-            
+
         else:
             # Simple loss function (single value)
             if isinstance(losses, (tuple, list)):
@@ -161,7 +192,7 @@ class BaseSystem(pl.LightningModule):
                 logger=True,
                 sync_dist=True,
             )
-            
+
             # Log individual losses
             for loss_val, loss_name in zip(individual_losses, loss_names):
                 self.log(
@@ -173,7 +204,7 @@ class BaseSystem(pl.LightningModule):
                     logger=True,
                     sync_dist=True,
                 )
-            
+
             # Log scaled losses (unweighted)
             self.log(
                 f"loss_scaled/{mode}/tot",
@@ -184,7 +215,7 @@ class BaseSystem(pl.LightningModule):
                 logger=True,
                 sync_dist=True,
             )
-            
+
             for scaled_loss, loss_name in zip(scaled_losses, loss_names):
                 self.log(
                     f"loss_scaled/{mode}/{loss_name}",
@@ -203,6 +234,10 @@ class BaseSystem(pl.LightningModule):
         return tot_loss
 
     def compute_and_log_metrics(self, pred, target, mode):
+        """Compute and log metrics. No-op if using callbacks."""
+        if self.use_callbacks:
+            return  # Metrics handled by MetricsLoggingCallback
+
         for name, metric in self.metrics.items():
             metric = metric.to(self.device)
             if pred.dim() == 3:
@@ -228,6 +263,10 @@ class BaseSystem(pl.LightningModule):
         pred, target, metric_value = None, None, None
 
     def log_audio(self, batch_idx, input, target, pred, mode):
+        """Log audio samples. No-op if using callbacks."""
+        if self.use_callbacks:
+            return  # Audio logging handled by AudioLoggingCallback
+
         input, target, pred = input.detach().cpu(), target.detach().cpu(), pred.detach().cpu()
 
         if mode == "test":  # log all audio in test mode
@@ -278,6 +317,10 @@ class BaseSystem(pl.LightningModule):
         input, target, pred = None, None, None
 
     def log_frequency_response(self):
+        """Log frequency response plot. No-op if using callbacks."""
+        if self.use_callbacks:
+            return  # Frequency response handled by FrequencyResponseCallback
+
         print("\nLogging frequency response...")
         self.model.reset_states()
         with torch.no_grad():
@@ -285,6 +328,10 @@ class BaseSystem(pl.LightningModule):
         self.logger.experiment.log({f"response/freq+phase": [wandb.Image(plot, caption=f"")]}, step=self.trainer.global_step)
 
     def compute_and_log_fad(self, mode):
+        """Compute and log FAD scores. No-op if using callbacks."""
+        if self.use_callbacks:
+            return  # FAD computation handled by FADComputationCallback
+
         print("\nComputing and logging FAD...")
         run_dir = self.logger.experiment.dir
         pred_dir = os.path.join(run_dir, f"media/audio/audio/{mode}/pred")
@@ -376,8 +423,9 @@ class BlackBoxSystem(BaseSystem):
         loss: torch.nn.Module,
         lr: float = 1e-4,
         log_media_every_n_steps: int = 10000,
+        use_callbacks: bool = False,
     ):
-        super().__init__(loss, lr, log_media_every_n_steps)
+        super().__init__(loss, lr, log_media_every_n_steps, use_callbacks)
         self.model = model
 
     def common_step(
@@ -419,8 +467,8 @@ class BlackBoxSystem(BaseSystem):
 
     def validation_step(self, batch, batch_idx):
         loss = self.common_step(batch, batch_idx, mode="val")
-        # log media
-        if batch_idx == 0:
+        # log media (skip if using callbacks)
+        if not self.use_callbacks and batch_idx == 0:
             if (self.trainer.global_step / self.log_media_every_n_steps) > self.log_media_counter:
                 if self.model.num_controls > 0:
                     input, target, controls = batch
@@ -446,24 +494,25 @@ class BlackBoxSystem(BaseSystem):
     def test_step(self, batch, batch_idx):
         loss = self.common_step(batch, batch_idx, mode="test")
 
-        # log media
-        if self.model.num_controls > 0:
-            input, target, controls = batch
-        else:
-            input, target = batch
-            controls = None
+        # log media (skip if using callbacks)
+        if not self.use_callbacks:
+            if self.model.num_controls > 0:
+                input, target, controls = batch
+            else:
+                input, target = batch
+                controls = None
 
-        self.model.reset_states()
-        with torch.no_grad():
-            pred = self(input, controls)
-        input, target, pred = input.detach().cpu(), target.detach().cpu(), pred.detach().cpu()
+            self.model.reset_states()
+            with torch.no_grad():
+                pred = self(input, controls)
+            input, target, pred = input.detach().cpu(), target.detach().cpu(), pred.detach().cpu()
 
-        self.log_audio(batch_idx, input, target, pred, "test")
+            self.log_audio(batch_idx, input, target, pred, "test")
 
-        input, target, pred = None, None, None
-        if controls is not None:
-            controls = None
-        torch.cuda.empty_cache()
+            input, target, pred = None, None, None
+            if controls is not None:
+                controls = None
+            torch.cuda.empty_cache()
 
         return loss
 
@@ -482,8 +531,9 @@ class BlackBoxSystemWithTBPTT(BlackBoxSystem):
         lr: float = 1e-4,
         log_media_every_n_steps: int = 10000,
         step_num_samples: int = 2048,
+        use_callbacks: bool = False,
     ):
-        super().__init__(model, loss, lr, log_media_every_n_steps)
+        super().__init__(model, loss, lr, log_media_every_n_steps, use_callbacks)
         self.step_num_samples = step_num_samples
         self.automatic_optimization = False  # disables lightning optimization
         self.apply_gradient_clipping = False
@@ -602,8 +652,9 @@ class GreyBoxSystem(BaseSystem):
         loss: torch.nn.Module,
         lr: float = 1e-4,
         log_media_every_n_steps: int = 10000,
+        use_callbacks: bool = False,
     ):
-        super().__init__(loss, lr, log_media_every_n_steps)
+        super().__init__(loss, lr, log_media_every_n_steps, use_callbacks)
         self.model = model
 
     def common_step(
@@ -700,18 +751,20 @@ class GreyBoxSystem(BaseSystem):
         return loss
 
     def on_train_start(self):
-        batch = next(iter(self.trainer.train_dataloader))
-        if self.model.num_controls > 0:
-            input, target, controls = batch
-            controls = controls.to(self.device)
-        else:
-            input, target = batch
-            controls = None
-        input = input.to(self.device)
-        target = target.to(self.device)
-        self.model.reset_states()
-        self.log_response_and_params_at_each_block(input, controls, "val")
-        # self.log_frequency_response() # atm needs too much memory
+        # Parameter visualization handled by callbacks if use_callbacks=True
+        if not self.use_callbacks:
+            batch = next(iter(self.trainer.train_dataloader))
+            if self.model.num_controls > 0:
+                input, target, controls = batch
+                controls = controls.to(self.device)
+            else:
+                input, target = batch
+                controls = None
+            input = input.to(self.device)
+            target = target.to(self.device)
+            self.model.reset_states()
+            self.log_response_and_params_at_each_block(input, controls, "val")
+            # self.log_frequency_response() # atm needs too much memory
 
     def log_audio_at_each_block(self, input, controls):
         print("\nLogging audio at each block...")
@@ -733,6 +786,10 @@ class GreyBoxSystem(BaseSystem):
                 )
 
     def log_response_and_params_at_each_block(self, input, controls, mode="val"):
+        """Log response and parameters at each block. No-op if using callbacks."""
+        if self.use_callbacks:
+            return  # Parameter visualization handled by ParameterVisualizationCallback
+
         print("\nLogging response and parameters at each block...")
         x = input.to(self.device)
         control_params = self.model.controller(x, controls if controls is not None else None)
