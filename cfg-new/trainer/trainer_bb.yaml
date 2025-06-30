@@ -9,10 +9,10 @@ trainer:
     init_args:
       entity: mcomunita
       project: nablafx
-      name: bb_S4-TVF-B8-S32-C16_lr.01_td.5_fd.5
-      save_dir: logs/multidrive-ffuzz/S4-TVF/bb_S4-TVF-B8-S32-C16_lr.01_td.5_fd.5 # dir needs to already exist
-      group: Multidrive-FFuzz_S4-TVF
-      tags: ["Multidrive-FFuzz", "S4-TVF"]
+      name: bb_S4-B4-S4-C16_lr.01_td.5_fd.5
+      save_dir: logs/ampeg-optocomp/S4/bb_S4-B4-S4-C16_lr.01_td.5_fd.5 # dir needs to already exist
+      group: Ampeg-OptoComp_S4
+      tags: ["Ampeg-OptoComp", "S4"]
 
   callbacks:
     # 🎵 NablAFx Audio Logging - Replaces built-in log_audio()
@@ -34,10 +34,10 @@ trainer:
     # 🎛️ NablAFx Frequency Response - Replaces built-in log_frequency_response()
     - class_path: nablafx.callbacks.FrequencyResponseCallback
       init_args:
-        log_on_train_start: false
+        log_on_train_start: true
         log_on_train_end: false
         log_on_test_end: true
-        log_every_n_epochs: 25
+        log_every_n_epochs: null
 
     # 🎯 NablAFx FAD Computation - Replaces built-in compute_and_log_fad()
     - class_path: nablafx.callbacks.FADComputationCallback
