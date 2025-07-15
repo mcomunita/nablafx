@@ -2,19 +2,14 @@ import torch
 from nablafx.s4 import S4
 
 model = S4(
-    num_control_params=2,
-    take_side_chain=False,
-    inner_audio_channel=32,
-    s4_hidden_size=4,
+    num_controls=2,
+    channel_width=32,
+    s4_state_dim=4,
     s4_learning_rate=0.005,
-    model_depth=4,
-    film_take_batchnorm=True,
-    take_residual_connection=True,
-    convert_to_decibels=False,
-    take_tanh=True,
-    activation="PTanh",
-    take_parametered_tanh=True,
-    convert_to_amplitude=False,
+    num_blocks=4,
+    batchnorm=True,
+    residual=True,
+    act_type="prelu",
 )
 
 # test model

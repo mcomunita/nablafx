@@ -12,7 +12,7 @@ The project requires Python 3.9.7 and uses both pip and conda for dependency man
 
 **Conda setup (recommended):**
 ```bash
-conda env create -f environment_temp-for-rnl.yaml
+conda env create -f environment.yml
 conda env update -f environment.yml
 conda activate nablafx
 # Move weights/rationals_config.json to ~/.conda/envs/nablafx/lib/python3.9/site-packages/rational/rationals_config.json

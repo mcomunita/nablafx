@@ -2,9 +2,9 @@ import os
 from nablafx.data import DryWetFilesPluginDataModule
 
 datamodule = DryWetFilesPluginDataModule(
-    root_dir="/import/c4dm-datasets-ext/NNLIN-AFX-DATASET/fuzz-2500ms/chunks",
-    params_file=None,
-    params_to_use=None,
+    root_dir_dry="/import/c4dm-datasets-ext/NNLIN-AFX-DATASET/fuzz-2500ms/chunks/dry",
+    root_dir_wet="/import/c4dm-datasets-ext/NNLIN-AFX-DATASET/fuzz-2500ms/chunks/wet",
+    params_idxs_to_use=None,
     data_to_use=1.0,
     sample_length=-1,
     preload=True,

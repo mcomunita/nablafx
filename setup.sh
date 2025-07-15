@@ -103,7 +103,10 @@ fi
 # Install nablafx package in development mode
 echo "Installing nablafx package in development mode..."
 # Note: rational-activations is already installed from conda environment setup
-pip install -e . --no-deps || pip install -e . || echo "WARNING: nablafx package installation failed"
+if ! pip install -e .; then
+    echo "Standard installation failed, trying without dependencies..."
+    pip install -e . --no-deps || echo "WARNING: nablafx package installation failed completely"
+fi
 
 # Check wandb login
 echo "Checking Weights & Biases setup..."

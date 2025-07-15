@@ -10,10 +10,7 @@ cond_type = [None, "fixed", "tvcond"]
 i = 0
 for r,dp,ct in product(residual, direct_path, cond_type):
     # Set num_controls based on cond_type requirements
-    if ct == "fixed":
-        num_controls = 2  # fixed conditioning requires num_controls > 0
-    else:
-        num_controls = 0  # None and tvcond can work with 0 controls
+    num_controls = 2 if ct == "fixed" else 0  # fixed conditioning requires num_controls > 0
         
     model = LSTM(
         num_inputs=1,
