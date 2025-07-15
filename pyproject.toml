@@ -1,9 +1,31 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "nablafx"
 version = "0.1.0"
-description = ""
-requires-python = ">=3.9,<3.10"
-
+description = "Differentiable black-box and gray-box audio effects modeling framework"
+requires-python = ">=3.9,<3.11"
 dependencies = [
-  "rational-activations==0.2.0"
+  "torch>=2.0.0",
+  "torchaudio>=2.0.0",
+  "lightning>=2.0.0",
+  "auraloss>=0.4.0",
+  "einops",
+  "matplotlib",
+  "numpy",
+  "scipy",
+  "wandb",
+  "torchmetrics"
 ]
+
+[tool.setuptools.packages.find]
+include = ["nablafx*"]
+exclude = ["tests*", "cfg*", "logs*", "data*", "assets*", "weights*", "checkpoints_fad*", "scripts*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]

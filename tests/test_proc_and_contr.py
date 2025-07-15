@@ -46,7 +46,10 @@ controls = torch.randn(4, 2)
 
 control_params = controller_1(x)
 for c in control_params:
-    print("block control params:", c.shape)
+    if c is not None:
+        print("block control params:", c.shape)
+    else:
+        print("block control params: None")
 
 y = processor_1(x, control_params)
 print("x: ", x.shape)
@@ -54,7 +57,10 @@ print("y: ", y.shape)
 
 control_params = controller_2(x, controls)
 for c in control_params:
-    print("block control params:", c.shape)
+    if c is not None:
+        print("block control params:", c.shape)
+    else:
+        print("block control params: None")
 
 y = processor_2(x, control_params)
 print("x: ", x.shape)
