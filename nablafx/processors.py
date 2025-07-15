@@ -1342,7 +1342,7 @@ class TanhNonlinearity(torch.nn.Module):
         return self.process(x, train=train)
 
     def process(self, x: torch.Tensor, train: bool = False):
-        return torch.tanh(x), self.get_param_dict(control_params)
+        return torch.tanh(x), self.get_param_dict(None)
 
 
 # -----------------------------------------------------------------------------

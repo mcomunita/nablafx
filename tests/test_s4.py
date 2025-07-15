@@ -1,7 +1,7 @@
 import torch
-from nablafx.s4 import S4ConditionalModel
+from nablafx.s4 import S4
 
-model = S4ConditionalModel(
+model = S4(
     num_control_params=2,
     take_side_chain=False,
     inner_audio_channel=32,
@@ -26,7 +26,7 @@ y = model(x, p)
 print(y.shape)
 
 
-CUDA_VISIBLE_DEVICES=1 python scripts/main.py fit \
--c cfg/trainer/trainer_bb_s4.yaml \
--c cfg/data/data-param_multidrive-ffuzz.yaml \
--c cfg/model/bb_s4-L-4-32.yaml \
+# CUDA_VISIBLE_DEVICES=1 python scripts/main.py fit \
+# -c cfg/trainer/trainer_bb_s4.yaml \
+# -c cfg/data/data-param_multidrive-ffuzz.yaml \
+# -c cfg/model/bb_s4-L-4-32.yaml
